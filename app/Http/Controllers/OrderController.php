@@ -28,6 +28,9 @@ class OrderController extends Controller
 
         ProcessOrder::dispatch($order);
 
-        return response()->json(['order' => $order], 201);
+        return response()->json([
+            'message' => "order received",
+            'order' => $order->id
+        ], 201);
     }
 }

@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Ingredient;
 use App\Models\Purchase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ProcessOrder implements ShouldQueue
 {
@@ -41,7 +42,7 @@ class ProcessOrder implements ShouldQueue
             }
         }
         // deliver ingredients
-        // $this->deliver_ingredients();
+        $this->deliver_ingredients();
     }
 
     private function buy_more_ingredients($ingredient, $quantity_needed): void
@@ -74,5 +75,22 @@ class ProcessOrder implements ShouldQueue
         // update inventory
         $ingredient->quantity += $quantity_bought;
         $ingredient->save();
+    }
+
+    private function deliver_ingredients()
+    {
+        $body = [
+            'order_code' => $this->order->order_code,
+            'ingredients' => $this->order->ingredients,
+        ];
+        Log::info($body);
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+        ])->post("http://127.0.0.1:8001/api/orders/get-ingredients", $body);
+
+        Log::info($response->json());
+        $this->order->status = "delivered";
+        $this->order->save();
+        Log::info("order delivered and finished");
     }
 }
