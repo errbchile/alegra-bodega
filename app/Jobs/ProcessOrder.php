@@ -86,7 +86,7 @@ class ProcessOrder implements ShouldQueue
                 }
 
                 $quantity_bought += $response['quantitySold'];
-                $this->register_purchase($ingredient, $quantity_bought);
+                $this->register_purchase($ingredient, $response['quantitySold']);
             }
         }
         return $quantity_bought;
