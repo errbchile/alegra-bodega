@@ -56,7 +56,8 @@ class ProcessOrder implements ShouldQueue
 
     private function take_ingredient_quantity($ingredient, $quantity)
     {
-        $ingredient->quantity = $ingredient->quantity - $quantity;
+        $new_quantity = $ingredient->quantity - $quantity;
+        $ingredient->quantity = $new_quantity;
         $ingredient->save();
     }
 
