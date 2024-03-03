@@ -34,18 +34,43 @@ class ProcessOrder implements ShouldQueue
     public function handle(): void
     {
         foreach ($this->order->ingredients as $ingredient_needed) {
-            $ingredient = Ingredient::where('name', $ingredient_needed['name'])->first();
-            $need_more_ingredients = $ingredient->quantity < $ingredient_needed['quantity'];
-            if ($need_more_ingredients) {
-                $quantity_needed = $ingredient_needed['quantity'] - $ingredient->quantity;
-                $this->buy_more_ingredients($ingredient, $quantity_needed);
-            }
+            $this->handle_single_ingredient($ingredient_needed);
         }
         // deliver ingredients
         $this->deliver_ingredients();
     }
 
-    private function buy_more_ingredients($ingredient, $quantity_needed): void
+    private function handle_single_ingredient($ingredient_needed)
+    {
+        $ingredient = Ingredient::where('name', $ingredient_needed['name'])->first();
+
+        $need_more_ingredients = $ingredient->quantity < $ingredient_needed['quantity'];
+        if ($need_more_ingredients) {
+            $how_much_more = $ingredient_needed['quantity'] - $ingredient->quantity;
+            $this->take_ingredient_quantity($ingredient, $ingredient->quantity);
+            $this->search_more_ingredient($ingredient, $how_much_more);
+        } else {
+            $this->take_ingredient_quantity($ingredient, $ingredient_needed['quantity']);
+        }
+    }
+
+    private function take_ingredient_quantity($ingredient, $quantity)
+    {
+        $ingredient->quantity = $ingredient->quantity - $quantity;
+        $ingredient->save();
+    }
+
+    private function search_more_ingredient($ingredient, $quantity_needed): void
+    {
+        $quantity_bought = $this->buy_more_ingredient($ingredient, $quantity_needed);
+
+        $remaining = $quantity_bought - $quantity_needed;
+        // update inventory
+        $ingredient->quantity = $remaining;
+        $ingredient->save();
+    }
+
+    private function buy_more_ingredient($ingredient, $quantity_needed)
     {
         $quantity_bought = 0;
         while ($quantity_bought < $quantity_needed) {
@@ -63,6 +88,7 @@ class ProcessOrder implements ShouldQueue
                 $this->register_purchase($ingredient, $quantity_bought);
             }
         }
+        return $quantity_bought;
     }
 
     private function register_purchase($ingredient, $quantity_bought)
@@ -71,10 +97,6 @@ class ProcessOrder implements ShouldQueue
         $purchase->ingredient_id = $ingredient->id;
         $purchase->quantity = $quantity_bought;
         $purchase->save();
-
-        // update inventory
-        $ingredient->quantity += $quantity_bought;
-        $ingredient->save();
     }
 
     private function deliver_ingredients()
