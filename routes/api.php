@@ -21,3 +21,5 @@ use App\Http\Controllers\OrderController;
 
 
 Route::post('/orders/create', [OrderController::class, 'create']);
+
+Route::get('/statistics', [OrderController::class, 'get_statistics']);
