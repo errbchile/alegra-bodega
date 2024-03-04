@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PurchaseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,3 +24,4 @@ use App\Http\Controllers\OrderController;
 Route::post('/orders/create', [OrderController::class, 'create']);
 
 Route::get('/statistics', [OrderController::class, 'get_statistics']);
+Route::get('/purchases', [PurchaseController::class, 'index']);
