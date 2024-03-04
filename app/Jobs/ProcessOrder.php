@@ -75,9 +75,11 @@ class ProcessOrder implements ShouldQueue
     {
         $quantity_bought = 0;
         while ($quantity_bought < $quantity_needed) {
+            $url = env('API_MARKET_URL') . "?ingredient={$ingredient->name}";
+
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
-            ])->get("https://recruitment.alegra.com/api/farmers-market/buy?ingredient={$ingredient->name}");
+            ])->get($url);
 
             if ($response->successful()) {
 
@@ -107,9 +109,10 @@ class ProcessOrder implements ShouldQueue
             'ingredients' => $this->order->ingredients,
         ];
         Log::info($body);
+        $url = env('API_COCINA_URL') . '/api/orders/get-ingredients';
         $response = Http::withHeaders([
             'Accept' => 'application/json',
-        ])->post("http://127.0.0.1:8001/api/orders/get-ingredients", $body);
+        ])->post($url, $body);
 
         Log::info($response->json());
         $this->order->status = "delivered";
