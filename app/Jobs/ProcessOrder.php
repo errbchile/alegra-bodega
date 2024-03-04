@@ -115,7 +115,7 @@ class ProcessOrder implements ShouldQueue
         ])->post($url, $body);
 
         Log::info($response->json());
-        $this->order->status = "delivered";
+        $this->order->status = Order::DELIVERED;
         $this->order->save();
         Log::info("order delivered and finished");
     }

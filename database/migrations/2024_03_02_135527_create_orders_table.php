@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Order;
 
 return new class extends Migration
 {
@@ -15,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('order_code');
             $table->json('ingredients');
-            $table->string('status')->default('pending');
+            $table->string('status')->default(Order::PENDING);
             $table->timestamps();
         });
     }

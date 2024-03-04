@@ -25,7 +25,7 @@ class OrderController extends Controller
         $order = Order::create([
             'order_code' => $request->order_code,
             'ingredients' => $request->ingredients,
-            'status' => 'pending',
+            'status' => Order::PENDING,
         ]);
 
         ProcessOrder::dispatch($order);

@@ -11,6 +11,9 @@ class Order extends Model
 
     protected $fillable = ['order_code', 'ingredients', 'status'];
 
+    public const PENDING = 'pending';
+    public const DELIVERED = 'delivered';
+
     protected $casts = [
         'ingredients' => 'json',
     ];
