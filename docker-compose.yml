@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
     tty: true
     ports: 
-      - 33069:3306
+      - 3306:3306
     volumes:
       - ./mysql:/var/lib/mysql
     environment:
@@ -44,8 +44,6 @@ services:
     container_name: bodega
     volumes:
       - .:/var/www/html 
-    ports:
-      - 9000:80
     networks:
       - laravel
 
